@@ -87,14 +87,133 @@ function Change(runScene, info) {
   };
 
   // 每帧调用函数 render同步
-  this.running = () => {};
+  this.running = () => { };
 
   // 销毁
   this.dispose = () => {
-    this.init = () => {};
+    this.init = () => { };
     dom.removeEventListener("click", this.click);
     runScene.dispose();
   };
+}
+
+
+
+//尺寸显示和隐藏
+class Size {
+  // 长度
+  Linescale = {
+    length: p.getModel("长度"),
+    width: p.getModel("宽度"),
+    height: p.getModel("高度"),
+  };
+  Wordscale = {
+    length: p.getModel("长度字"),
+    width: p.getModel("宽度字"),
+    height: p.getModel("高度字"),
+  };
+  constructor() {
+    this.init()
+    this.isShowSize(false)
+  }
+  init(){
+    Object.values(this.Linescale).map((i) => {
+      i.children &&
+      i.children.map((model) => {
+        model.oldScale = {...model.scale}
+      });
+    });
+    Object.values(this.Wordscale).map((i) => {
+      i.oldScale = {...i.scale}
+    });
+  }
+  // 判断是否显示尺寸 ---- true显示 false隐藏
+  isShowSize(isShow) {
+      Object.values(this.Linescale).map((i) => {
+        i.matrixAutoUpdate = true;
+        i.children &&
+          i.children.map((model) => {
+            model.matrixAutoUpdate = true;
+            t.events.closeAnimaAtStart.ShowSizeOne = p.anima(
+              {
+                x: model.scale.x,
+                y: model.scale.y,
+                z: model.scale.z,
+              },
+              {
+                x: isShow?model.oldScale.x:0,
+                y: isShow?model.oldScale.y:0,
+                z: isShow?model.oldScale.z:0,
+              },
+              1,
+              (data) => {
+                model.scale.x = data.x;
+                model.scale.y = data.y;
+                model.scale.z = data.z;
+              }
+            );
+          });
+      });
+      Object.values(this.Wordscale).map((i) => {
+        i.matrixAutoUpdate = true;
+        t.events.closeAnimaAtStart.ShowSizeSecond = p.anima(
+          {
+            x: i.scale.x,
+            y: i.scale.y,
+            z: i.scale.z,
+          },
+          {
+            x: isShow?i.oldScale.x:0,
+            y: isShow?i.oldScale.y:0,
+            z: isShow?i.oldScale.z:0,
+          },
+          1,
+          (data) => {
+            i.scale.x = data.x;
+            i.scale.y = data.y;
+            i.scale.z = data.z;
+          }
+        );
+      });
+    } 
+}
+
+//聚焦事件
+class Focus {
+  constructor() { }
+  oldAngle = {
+    cx: -1412.0053887971837,
+    cy: 731.9969609203264,
+    cz: 20.299430753139674,
+    tx: -56.45197638592644,
+    ty: 541.2733126956798,
+    tz: 59.25222975774079,
+  };
+  //聚焦显示
+  sizefocus() {
+    p.camAnima(
+      p.getCamLocal(),
+      {
+        cx: -2135.6350447164036, cy: 1741.3956587790512, cz: 627.7030837063357,
+        tx: -8.012608808963794, ty: 545.9788742687629, tz: -55.74910719014835
+      },
+      1
+    );
+  }
+  //还原
+  backfocus() {
+    // p.camAnima(p.getCamLocal(), this.oldAngle, 1);
+    p.camAnima(
+      p.getCamLocal(),
+      {
+        cx: -2687.8996979308668, cy: 946.2764890810919, cz: -172.761128991316,
+        tx: -47.25624173885633, ty: 574.7432479691323, tz: -96.88034643176331
+      },
+      1
+    );
+
+
+  }
 }
 
 // 工具类
@@ -113,6 +232,7 @@ class Events {
   // 需要被打断的动画名称
   closeAnimaAtStart = {
     enterAnima: "",
+    ShowSize: ""
   };
 
   keydownEvents = (event) => {
@@ -177,162 +297,6 @@ class Events {
     dom.removeEventListener("pointerdown", this.mouseDown);
     dom.removeEventListener("pointerup", this.mouseUp);
     controls.removeEventListener("start", this.controlStart);
-  }
-}
-
-//尺寸显示和隐藏
-class Size {
-  // 长度
-  Linescale = {
-    length: p.getModel("长度"),
-    width: p.getModel("宽度"),
-    height: p.getModel("高度"),
-  };
-  Wordscale = {
-    length: p.getModel("长度字"),
-    width: p.getModel("宽度字"),
-    height: p.getModel("高度字"),
-  };
-  constructor() {
-    // 默认0.1秒缩放为0
-    this.Small(0.1);
-  }
-  // 判断是否显示尺寸 ---- true显示 false隐藏
-  isShowSize(isShow) {
-    if (isShow) {
-      Object.values(this.Linescale).map((i) => {
-        i.matrixAutoUpdate = true;
-        i.children &&
-          i.children.map((model) => {
-            model.matrixAutoUpdate = true;
-            p.anima(
-              {
-                x: model.scale.x,
-                y: model.scale.y,
-                z: model.scale.z,
-              },
-              {
-                x: model.oldScale.x,
-                y: model.oldScale.y,
-                z: model.oldScale.z,
-              },
-              1,
-              (data) => {
-                model.scale.x = data.x;
-                model.scale.y = data.y;
-                model.scale.z = data.z;
-              }
-            );
-          });
-      });
-      Object.values(this.Wordscale).map((i) => {
-        i.matrixAutoUpdate = true;
-        p.anima(
-          {
-            x: i.scale.x,
-            y: i.scale.y,
-            z: i.scale.z,
-          },
-          {
-            x: i.oldScale.x,
-            y: i.oldScale.y,
-            z: i.oldScale.z,
-          },
-          1,
-          (data) => {
-            i.scale.x = data.x;
-            i.scale.y = data.y;
-            i.scale.z = data.z;
-          }
-        );
-      });
-    } else {
-      this.Small(1);
-    }
-  }
-  // 缩小
-  Small(timer) {
-    p.getMacro(() => {
-      this.Linescale &&
-        Object.values(this.Linescale).map((i) => {
-          i.matrixAutoUpdate = true;
-          if (i.children !== undefined) {
-            i.children.map((model) => {
-              model.matrixAutoUpdate = true;
-              model.oldScale = { ...model.scale };
-              p.anima(
-                {
-                  x: model.scale.x,
-                  y: model.scale.y,
-                  z: model.scale.z,
-                },
-                {
-                  x: 0,
-                  y: 0,
-                  z: 0,
-                },
-                timer,
-                (data) => {
-                  model.scale.x = data.x;
-                  model.scale.y = data.y;
-                  model.scale.z = data.z;
-                }
-              );
-            });
-          }
-        });
-
-      Object.values(this.Wordscale).map((i) => {
-        i.matrixAutoUpdate = true;
-        i.oldScale = { ...i.scale };
-        p.anima(
-          {
-            x: i.scale.x,
-            y: i.scale.y,
-            z: i.scale.z,
-          },
-          {
-            x: 0,
-            y: 0,
-            z: 0,
-          },
-          timer,
-          (data) => {
-            i.scale.x = data.x;
-            i.scale.y = data.y;
-            i.scale.z = data.z;
-          }
-        );
-      });
-    }, 100);
-  }
-}
-
-//聚焦事件
-class Focus {
-  constructor() {}
-  oldAngle = {
-    cx: -1412.0053887971837,
-    cy: 731.9969609203264,
-    cz: 20.299430753139674,
-    tx: -56.45197638592644,
-    ty: 541.2733126956798,
-    tz: 59.25222975774079,
-  };
-  //聚焦显示
-  sizefocus() {
-    p.camAnima(
-      p.getCamLocal(),
-      {
-        cx:-1440.6863285544177,cy:1378.5833692821657,cz:590.7573616240431,
-        tx:45.11176998942494,ty:543.7792440323999,tz:113.4772068436512
-      },
-      1
-    );
-  }
-  //还原
-  backfocus() {
-    p.camAnima(p.getCamLocal(), this.oldAngle, 1);
   }
 }
 export default Change;
