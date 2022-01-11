@@ -38,7 +38,7 @@ export default {
     // 加载场景
     loadScene() {
       this.runScene = new RunScene({
-        path: "https://test2-1303915342.cos.ap-shanghai.myqcloud.com/newbattery/d.glb",
+        path: "https://test2-1303915342.cos.ap-shanghai.myqcloud.com/newbattery/d3.glb",
         // path: "./assets/s.glb",
         rootDom: this.$refs["three-scene"],
         options: {
