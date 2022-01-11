@@ -2,7 +2,7 @@
   <div class="view">
     <div class="ui">
       <div class="img">
-        <div class="title">NEX POWER</div>
+        <div class="title">NEX ENERGY</div>
         <div class="sub">Residential Power Bank</div>
         <div>Building a new home energy source</div>
       </div>
@@ -10,7 +10,7 @@
     <div class="battery">
       <div class="total">Total Capacity:5.12KWh(51.2V,100Ah)</div>
       <div class="weight">Weight:55kg</div>
-      <div class="dimension">Dimension:52(W)*855(D)*150(H)mm</div>
+      <div class="dimension">Dimension:525(W)*855(D)*153(H)mm</div>
       <div class="rating">IP rating:IP65</div>
     </div>
     <div class="life">LifePo4 Battery</div>
